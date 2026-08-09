@@ -326,6 +326,37 @@ Load the relevant reference only when needed:
 These references describe recognition and safe handling. They do not create a
 settlement integration or authorize a transaction.
 
+## Provider adapter boundary
+
+Provider adapters are configuration-bound integrations, not new payment rails.
+Load these references when a configured provider is relevant:
+
+- `references/providers/capability-matrix.md`
+- `references/providers/registry.md`
+- `references/providers/pardhfi.md`
+- `references/providers/qrafted.md`
+- `references/providers/stablex.md`
+- `references/providers/indonesia-qris-interactive.md`
+- `references/providers/crypto-settlement.md`
+- `roam/provider-readiness.md`
+- `roam/provider-health.md`
+
+`ROAM_TEST_MODE=true` is the default. In test mode, do not call a production
+provider or submit a financial transaction. A provider may be marked live only
+after its onboarding, credentials, external endpoint configuration, and
+capability checks are complete.
+
+The InterActive QRIS adapter creates and checks IDR QRIS merchant invoices only.
+Never use the QRIS provider as a crypto recipient. Crypto settlement must use a
+separate configured `CryptoSettlementProvider`; only its verified
+`recipientAddress` may be passed to Bankr for a crypto transfer.
+
+Before any live payment attempt, run the readiness and health checks in
+`roam/provider-readiness.md` and `roam/provider-health.md`. The exact
+`CAN_EXECUTE_REAL_PAYMENT` gate must return `true`; otherwise return `false` and
+do not call a mutating provider or Bankr transfer capability. With
+`ROAM_TEST_MODE=true`, the gate is always `false`.
+
 ## Example intents
 
 - "ROAM, analyze this QR." -> decode, classify, extract, and report; do not pay.
